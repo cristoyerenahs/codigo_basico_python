@@ -1,0 +1,33 @@
+!pip install pandas 
+!pip install numpy  
+!pip install matplotlib.pyplot           # instalamos biblioteca
+!pip install seaborn 
+!pip install statsmodels
+!pip install bokeh  
+
+import pandas as pd                   # IMPORTAMOS BIBLIOTECAS CON RESPECTIVA ABREAVIATURA
+import numpy as np
+import bokeh as bk
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels as stata
+
+
+
+Data_name =pd.read_csv("ROAD\\.csv", sep=',') # CARGAMOS ARCHIVO
+Data_name[:5]
+
+Data_name[['Beispiel_1','Beispiel_2']].head()
+
+!pip install statsmodels
+from statsmodels import api as ap
+from statsmodels.formula.api import ols       # Estadistica
+from scipy import stats
+from scipy.stats import shapiro
+
+
+# MODELO DE REGRESION 1: VAR. DEP: VARIABLE, FATORES: FATOR_1 E FATOR_2.
+import statsmodels.formula.api as smf
+reg1 = smf.ols('Resposta_1 ~ Beta_1 + Beta_2', data=Data_name).fit()
+reg1.summary()
+
