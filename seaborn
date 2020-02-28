@@ -1,0 +1,46 @@
+import os
+import pandas as pd
+import numpy as np
+# Gráficos
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Pruebas estadísticas
+from statsmodels import api as ap
+from statsmodels.formula.api import ols
+import scipy.stats as est
+# Grafico mosaico
+from statsmodels.graphics.mosaicplot import mosaic
+
+url= 'https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data'
+
+sns.distplot(DB['Variable_num'], bins=15, hist=True, kde=True,
+            color='red',vertical=False, axlabel='Mi_etiqueta',
+             kde_kws={'Color':'green','lw':2,'label':'Linea'},
+             hist_kws={'color':'orange','lw':3,'label':'Barras',
+                     'alpha':0.3,'histtype':'stepfilled'} )
+plt.title('Mi grafico de Distribucion')
+plt.show()
+#################################################################
+
+plt.figure(figsize=(12,5) ) # Tamaño del grafico
+
+sns.lineplot(data=DB, x='variable_numerica',y='variable_nume', style='Variable_nume',
+            markers=True,ci=None)
+plt.title('Lineas')
+plt.show
+
+##################################################################
+
+sns.barplot(data=DB, x='variable_cat', y='variable_num',order=['a','b'],
+           hue='variable_num', orient='v',palette='pastel',ci=None)
+plt.show()
+
+
+#################################################################3
+
+sns.jointplot(data=DB, x='variable_num', y='variable_num', kind='hex',
+             ratio=6, space=0,marginal_kws={'bins':40}) 
+plt.show()
+
+
+
