@@ -1,0 +1,258 @@
+from bokeh.io import show, output_file
+from bokeh.models import ColumnDataSource
+from bokeh.palettes import Spectral6
+from bokeh.plotting import figure
+
+output_file("name.html")
+
+data_name = ['a', 'b', 'c', 'd', 'e', 'f']
+numbers = [#, #, #, #, #, #]
+
+source = ColumnDataSource(data=dict(fruits3=fruits3, counts3=counts3, color=Spectral6))
+
+p = figure(x_range=data_name, y_range=(0,9), plot_height=250, title="Cristopher",
+           toolbar_location=None, tools="")
+
+p.vbar(x='data_name', top='numbers', width=0.9, color='color', legend="data_name", source=source)
+
+p.xgrid.grid_line_color = None
+p.legend.orientation = "horizontal"
+p.legend.location = "top_center"
+
+show(p)
+###############################################################################################
+
+
+from bokeh.io import show, output_file
+from bokeh.models import ColumnDataSource, FactorRange
+from bokeh.plotting import figure
+from bokeh.transform import factor_cmap
+
+output_file("Idiomas.html")
+
+data_name = ['a', 'b', 'c', 'D', 'n']
+anos = ['####', '####', '####']
+
+data = {'data_name' : data_name,
+        '2015'   : [60, 55, 60, 60, 0],
+        '2016'   : [50, 65, 70, 60, 0],
+        '2017'   : [45, 70, 90, 60, 0]}
+
+palette = ["#c9d9d3", "#718dbf", "#e84d60"]
+
+x = [ (fruit, year) for fruit in fruits for year in years ]
+counts = sum(zip(data['2015'], data['2016'], data['2017']), ()) # like an hstack
+
+source = ColumnDataSource(data=dict(x=x, counts=counts))
+
+p = figure(x_range=FactorRange(*x), plot_height=250, title="Porcentajes de Idiomas de Cristopher Yerena",
+           toolbar_location=None, tools="")
+
+p.vbar(x='x', top='counts', width=.90, source=source, line_color="white",
+       fill_color=factor_cmap('x', palette=palette, factors=years, start=1, end=2))
+
+p.y_range.start = 0
+p.x_range.range_padding = 0.1
+p.xaxis.major_label_orientation = 1
+p.xgrid.grid_line_color = None
+
+show(p)
+###############################################################################3
+
+from bokeh.io import show, output_file
+from bokeh.plotting import figure
+
+output_file("Idiomas.html")
+
+letras = ['E', 'E', 'P', 'D', 'N']
+years =  ["####", "####", "####"]
+colors = ["#932567", "#718dbf", "#30678D"]
+
+data = {'letras' : letras,
+        '2017'   : [60, 55, 60, 60, 0],
+        '2018'   : [50, 65, 70, 60, 0],
+        '2019'   : [45, 70, 90, 60, 0]}
+
+p = figure(x_range=letras, plot_height=250, title="Idiomas de Cristopher Yerena por año",
+           toolbar_location=None, tools="hover", tooltips="$name @letras: @$name")
+
+p.vbar_stack(years, x='letras', width=0.90, color=colors, source=data)
+
+p.y_range.start = 0
+p.x_range.range_padding = 0.1
+p.xgrid.grid_line_color = None
+p.axis.minor_tick_line_color = None
+p.outline_line_color = None
+p.legend.location = "top_left"
+p.legend.orientation = "horizontal"
+
+show(p)
+##############################################################################################3
+
+from numpy import linspace
+from scipy.stats.kde import gaussian_kde
+
+from bokeh.io import output_file, show
+from bokeh.models import ColumnDataSource, FixedTicker, PrintfTickFormatter
+from bokeh.plotting import figure
+
+import colorcet as cc
+
+output_file("familyplot.html")
+
+def ridge(category, data, scale=20):
+    return list(zip([category]*len(data), scale*data))
+
+cats = list(reversed(Familia.keys()))
+
+palette = [cc.rainbow[i*15] for i in range(17)]
+
+x = linspace(-20,110, 500)
+
+source = ColumnDataSource(data=dict(x=x))
+
+p = figure(y_range=cats, plot_width=900, x_range=(-5, 105), toolbar_location=None)
+
+for i, cat in enumerate(reversed(cats)):
+    pdf = gaussian_kde(Familia[cat])
+    y = ridge(cat, pdf(x))
+    source.add(y, cat)
+    p.patch('x', cat, color=palette[i], alpha=0.6, line_color="blue", source=source)
+
+p.outline_line_color = None
+p.background_fill_color = "#efefef"
+
+p.xaxis.ticker = FixedTicker(ticks=list(range(0, 101, 10)))
+p.xaxis.formatter = PrintfTickFormatter(format="%d%%")
+
+p.ygrid.grid_line_color = None
+p.xgrid.grid_line_color = "#dddddd"
+
+
+p.axis.minor_tick_line_color = None
+p.axis.major_tick_line_color = None
+p.axis.axis_line_color = None
+
+p.y_range.range_padding = 0.12
+
+show(p)
+##############################################################################
+
+from math import pi
+
+import pandas as pd
+
+from bokeh.io import output_file, show
+from bokeh.palettes import Category20c
+from bokeh.plotting import figure
+from bokeh.transform import cumsum
+
+output_file("pie_Cristopher.html")
+
+x = {
+    'Cristopher': 157,
+    'Gerardo': 93,
+    'Karla': 89,
+    'Amaury': 63,
+    'Joel': 44,
+    'Aldo': 42,
+    'Ana Paula Frazzon': 40,
+    'Patricia da Costa': 35,
+    'Mauricio Salcedo': 32,
+    'Fabian Correa': 31,
+    'Octavio': 31,
+    'Jorge': 29
+}
+
+data = pd.Series(x).reset_index(name='value').rename(columns={'index':'Familia'})
+data['angle'] = data['value']/data['value'].sum() * 2*pi
+data['color'] = Category20c[len(x)]
+
+p = figure(plot_height=350, title="Pie Chart Cristopher", toolbar_location=None,
+           tools="hover", tooltips="@Familia: @value", x_range=(-0.5, 1.0))
+
+p.wedge(x=0, y=1, radius=0.4,
+        start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
+        line_color="white", fill_color='color', source=data)
+
+p.axis.axis_label=None
+p.axis.visible=False
+p.grid.grid_line_color = None
+
+show(p)
+
+############################################################################################33
+#HISTOGRAMA
+from math import pi
+import pandas as pd
+
+from bokeh.io import show
+from bokeh.models import LinearColorMapper, BasicTicker, PrintfTickFormatter, ColorBar
+from bokeh.plotting import figure
+
+data=UFC(es mia, ja)
+
+data['Year'] = data['Year'].astype(str)
+data = data.set_index('Year')
+data.drop('Anual', axis=1, inplace=True)
+data.columns.name = 'Mes'
+
+years = list(data.index)
+meses = list(data.columns)
+
+# reshape to 1D array or rates with a month and year for each row.
+df = pd.DataFrame(data.stack(), columns=['rate']).reset_index()
+
+# this is the colormap from the original NYTimes plot
+colors = ["#404387", "#FBA40A", "#30678D", "#6b6ecf", "#393b79", "#00204C", "#cc7878", "#933b41", "#FBFCBF"]
+mapper = LinearColorMapper(palette=colors, low=df.rate.min(), high=df.rate.max())
+
+TOOLS = "hover,save,pan,box_zoom,reset,wheel_zoom"
+
+p = figure(title="Conteo Bacteriano por mes ({0} - {1})".format(years[0], years[-1]),
+           x_range=years, y_range=list(reversed(meses)),
+           x_axis_location="above", plot_width=900, plot_height=400,
+           tools=TOOLS, toolbar_location='below',
+           tooltips=[('date', '@Mes @Year'), ('rate', '@rate%')])
+
+p.grid.grid_line_color = None
+p.axis.axis_line_color = None
+p.axis.major_tick_line_color = None
+p.axis.major_label_text_font_size = "5pt"
+p.axis.major_label_standoff = 0
+p.xaxis.major_label_orientation = pi / 3
+
+p.rect(x="Year", y="Mes", width=1, height=1,
+       source=df,
+       fill_color={'field': 'rate', 'transform': mapper},
+       line_color=None)
+
+color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="5pt",
+                     ticker=BasicTicker(desired_num_ticks=len(colors)),
+                     formatter=PrintfTickFormatter(format="%d%%"),
+                     label_standoff=6, border_line_color=None, location=(0, 0))
+p.add_layout(color_bar, 'right')
+
+show(p)      # show the plot
+##########################################################################################33
+
+## MAPAS_SIN API(PORTO_ALEGRE)
+from bokeh.io import output_file, show
+from bokeh.models import ColumnDataSource, GMapOptions
+from bokeh.plotting import gmap
+
+output_file("gmap.html")
+
+map_options = GMapOptions(lat=XXXXXXX, lng=XXXXXX, map_type="roadmap", zoom=11)
+
+p = gmap("CONPRE UM API NO GGOGLE MAPS", map_options, title="UFRGS_Cristopher_Yerena")
+
+source = ColumnDataSource(
+    data=dict(lat=[XXXX, XXXXX, XXXXX],
+              lon=[XXXXX, XXXXX, XXXXX])
+)
+
+p.circle(x="lon", y="lat", size=15, fill_color="red", fill_alpha=0.8, source=source)
+
+show(p)
+##########################################################################################
